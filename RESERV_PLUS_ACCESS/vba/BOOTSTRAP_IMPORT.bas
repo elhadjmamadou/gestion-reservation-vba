@@ -1,59 +1,68 @@
 Attribute VB_Name = "BOOTSTRAP_IMPORT"
+Option Compare Database
+Option Explicit
+
 ' =============================================================================
-' RESERV+ — Module Bootstrap (import unique)
+' RESERV+ - Module Bootstrap
 ' =============================================================================
-' UTILISATION :
-'   1. Importez UNIQUEMENT ce fichier dans Access (ALT+F11, CTRL+M)
-'   2. Dans la fenêtre Exécution (CTRL+G), tapez :
-'        ImporterTousLesModules "C:\chemin\vers\RESERV_PLUS_ACCESS\vba"
-'   3. Puis : Installer_RESERV_PLUS
+' 1. Importer CE fichier seul dans Access (ALT+F11, CTRL+M)
+' 2. CTRL+G puis taper :  LancerInstallationComplete
+' 3. Entrer le chemin du dossier vba\ quand demande
 ' =============================================================================
 
-Public Sub ImporterTousLesModules(Optional DossierVBA As String = "")
-    Dim vbe As Object
-    Dim proj As Object
-    Dim comp As Object
+Public Sub LancerInstallationComplete()
     Dim chemin As String
-    Dim i As Integer
+    chemin = InputBox( _
+        "Entrez le chemin complet du dossier vba\" & vbCrLf & vbCrLf & _
+        "Exemple :" & vbCrLf & _
+        "C:\Users\abdourahamane.diallo\Documents\gestion-reservation-vba\RESERV_PLUS_ACCESS\vba", _
+        "RESERV+ - Chemin des modules VBA")
 
-    ' --- Demander le chemin si non fourni ---
-    If DossierVBA = "" Then
-        DossierVBA = InputBox( _
-            "Entrez le chemin complet du dossier vba\" & vbCrLf & _
-            "Exemple : C:\RESERV_PLUS_ACCESS\vba", _
-            "RESERV+ — Chemin des modules", _
-            "C:\RESERV_PLUS_ACCESS\vba")
-        If DossierVBA = "" Then
-            MsgBox "Installation annulée.", vbInformation
-            Exit Sub
-        End If
-    End If
-
-    ' S'assurer que le chemin se termine sans antislash
-    If Right(DossierVBA, 1) = "\" Then
-        DossierVBA = Left(DossierVBA, Len(DossierVBA) - 1)
-    End If
-
-    ' --- Vérifier que le dossier existe ---
-    If Dir(DossierVBA, vbDirectory) = "" Then
-        MsgBox "Dossier introuvable :" & vbCrLf & DossierVBA & vbCrLf & _
-               "Vérifiez le chemin et relancez.", vbCritical, "RESERV+ Erreur"
+    If Trim(chemin) = "" Then
+        MsgBox "Installation annulee.", vbInformation
         Exit Sub
     End If
 
-    Set vbe = Application.VBE
-    Set proj = vbe.ActiveVBProject
+    ' Supprimer antislash final si present
+    If Right(chemin, 1) = "\" Then chemin = Left(chemin, Len(chemin) - 1)
 
-    ' --- Liste des modules dans l'ordre obligatoire ---
+    ' Verifier que le dossier existe
+    If Dir(chemin, vbDirectory) = "" Then
+        MsgBox "Dossier introuvable :" & vbCrLf & chemin & vbCrLf & vbCrLf & _
+               "Verifiez le chemin et recommencez.", vbCritical, "RESERV+ Erreur"
+        Exit Sub
+    End If
+
+    ' Importer tous les modules
+    ImporterModules chemin
+
+    ' Lancer l'installation via Application.Run (evite l'erreur de compilation)
+    Dim rep As Integer
+    rep = MsgBox("30 modules importes avec succes !" & vbCrLf & vbCrLf & _
+                 "Lancer maintenant Installer_RESERV_PLUS ?", _
+                 vbYesNo + vbQuestion, "RESERV+")
+
+    If rep = vbYes Then
+        Application.Run "Installer_RESERV_PLUS"
+    End If
+End Sub
+
+Private Sub ImporterModules(dossier As String)
+    Dim vbe As Object
+    Dim proj As Object
+    Dim comp As Object
+    Dim i As Integer
+    Dim fichier As String
+    Dim erreurs As String
+
+    ' Liste dans l ordre obligatoire
     Dim modules(1 To 30) As String
-    ' CORE
     modules(1)  = "core\modConfig.bas"
     modules(2)  = "core\modDatabase.bas"
     modules(3)  = "core\modSession.bas"
     modules(4)  = "core\modSecurite.bas"
     modules(5)  = "core\modJournal.bas"
     modules(6)  = "core\modUtils.bas"
-    ' METIER
     modules(7)  = "metier\modClients.bas"
     modules(8)  = "metier\modPrestataires.bas"
     modules(9)  = "metier\modRessources.bas"
@@ -62,7 +71,6 @@ Public Sub ImporterTousLesModules(Optional DossierVBA As String = "")
     modules(12) = "metier\modPaiements.bas"
     modules(13) = "metier\modBillets.bas"
     modules(14) = "metier\modRapports.bas"
-    ' UI
     modules(15) = "ui\modThemeAccess.bas"
     modules(16) = "ui\modNavigation.bas"
     modules(17) = "ui\modFormFactory.bas"
@@ -75,77 +83,46 @@ Public Sub ImporterTousLesModules(Optional DossierVBA As String = "")
     modules(24) = "ui\modFormsPaiements.bas"
     modules(25) = "ui\modFormsAdministration.bas"
     modules(26) = "ui\modFormsRapports.bas"
-    ' REPORTS
     modules(27) = "reports\modReportsFactory.bas"
     modules(28) = "reports\modEtatsImprimables.bas"
-    ' INSTALL
     modules(29) = "install\modCreationRequetes.bas"
     modules(30) = "install\modInstall_RESERV_PLUS.bas"
 
-    ' --- Supprimer les modules déjà existants (évite les doublons) ---
-    Dim nomModule As String
+    Set vbe  = Application.VBE
+    Set proj = vbe.ActiveVBProject
+
+    ' Supprimer les modules standards existants sauf ce module
     For Each comp In proj.VBComponents
-        If comp.Name <> "BOOTSTRAP_IMPORT" And _
-           comp.Type = 1 Then  ' vbext_ct_StdModule = 1
+        If comp.Name <> "BOOTSTRAP_IMPORT" And comp.Type = 1 Then
             On Error Resume Next
             proj.VBComponents.Remove comp
             On Error GoTo 0
         End If
     Next comp
 
-    ' --- Importer chaque module ---
-    Dim erreurs As String
     erreurs = ""
 
     For i = 1 To 30
-        chemin = DossierVBA & "\" & modules(i)
+        fichier = dossier & "\" & modules(i)
 
-        If Dir(chemin) = "" Then
+        If Dir(fichier) = "" Then
             erreurs = erreurs & vbCrLf & "Manquant : " & modules(i)
         Else
             On Error Resume Next
-            proj.VBComponents.Import chemin
+            proj.VBComponents.Import fichier
             If Err.Number <> 0 Then
-                erreurs = erreurs & vbCrLf & "Erreur " & modules(i) & " : " & Err.Description
+                erreurs = erreurs & vbCrLf & "Erreur : " & modules(i) & " (" & Err.Description & ")"
                 Err.Clear
             End If
             On Error GoTo 0
         End If
+
+        ' Progression dans la fenetre Execution
+        If i Mod 5 = 0 Then Debug.Print "  Import " & i & "/30..."
     Next i
 
-    ' --- Résultat ---
-    If erreurs = "" Then
-        MsgBox "✔  30 modules importés avec succès !" & vbCrLf & vbCrLf & _
-               "Tapez maintenant dans la fenêtre Exécution (CTRL+G) :" & vbCrLf & _
-               "   Installer_RESERV_PLUS" & vbCrLf & vbCrLf & _
-               "Puis appuyez sur ENTRÉE.", _
-               vbInformation, "RESERV+ — Import terminé"
-    Else
-        MsgBox "Import terminé avec des avertissements :" & vbCrLf & erreurs & vbCrLf & vbCrLf & _
-               "Vérifiez les fichiers manquants puis relancez.", _
-               vbExclamation, "RESERV+ — Avertissements"
-    End If
-End Sub
-
-
-Public Sub LancerInstallationComplete()
-' Raccourci : importe + installe en une seule commande
-' Usage dans la fenêtre Exécution : LancerInstallationComplete
-    Dim chemin As String
-    chemin = InputBox( _
-        "Chemin complet du dossier vba\" & vbCrLf & _
-        "Exemple : C:\RESERV_PLUS_ACCESS\vba", _
-        "RESERV+ — Installation complète", _
-        "C:\RESERV_PLUS_ACCESS\vba")
-
-    If chemin = "" Then Exit Sub
-
-    ImporterTousLesModules chemin
-
-    Dim rep As Integer
-    rep = MsgBox("Lancer maintenant Installer_RESERV_PLUS ?", _
-                 vbYesNo + vbQuestion, "RESERV+")
-    If rep = vbYes Then
-        Installer_RESERV_PLUS
+    If erreurs <> "" Then
+        MsgBox "Avertissements lors de l'import :" & erreurs & vbCrLf & vbCrLf & _
+               "Verifiez les fichiers manquants.", vbExclamation, "RESERV+"
     End If
 End Sub
