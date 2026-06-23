@@ -1,7 +1,5 @@
-# =============================================================================
-# RESERV+ — Installeur automatique PowerShell
-# Double-cliquez sur INSTALLER_AUTO.bat pour lancer ce script
-# =============================================================================
+# RESERV+ - Installeur automatique PowerShell (ASCII only)
+# Lancer via INSTALLER_AUTO.bat
 
 param(
     [string]$CheminDestination = "C:\RESERV_PLUS",
@@ -10,16 +8,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# --- Bannière ---
 Clear-Host
 Write-Host ""
-Write-Host "  ╔══════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-Write-Host "  ║          RESERV+  —  Installation automatique        ║" -ForegroundColor Cyan
-Write-Host "  ║     Plateforme de réservation multi-prestataires     ║" -ForegroundColor Cyan
-Write-Host "  ╚══════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host "  ============================================================" -ForegroundColor Cyan
+Write-Host "  RESERV+  -  Installation automatique" -ForegroundColor Cyan
+Write-Host "  Plateforme de reservation multi-prestataires" -ForegroundColor Cyan
+Write-Host "  ============================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# --- Chemins ---
 $DossierScript = $PSScriptRoot
 $DossierVBA    = Join-Path $DossierScript "vba"
 $CheminAccdb   = Join-Path $CheminDestination $NomBase
@@ -28,31 +24,28 @@ Write-Host "  Source  : $DossierVBA" -ForegroundColor Gray
 Write-Host "  Cible   : $CheminAccdb" -ForegroundColor Gray
 Write-Host ""
 
-# --- Vérification dossier source ---
+# Verification dossier source
 if (-not (Test-Path $DossierVBA)) {
     Write-Host "  [ERREUR] Dossier vba\ introuvable : $DossierVBA" -ForegroundColor Red
-    Write-Host "  Assurez-vous de lancer ce script depuis le dossier RESERV_PLUS_ACCESS\" -ForegroundColor Yellow
+    Write-Host "  Lancez ce script depuis le dossier RESERV_PLUS_ACCESS\" -ForegroundColor Yellow
     Read-Host "  Appuyez sur ENTREE pour quitter"
     exit 1
 }
 
-# --- Créer le dossier destination ---
+# Creer le dossier destination
 if (-not (Test-Path $CheminDestination)) {
     New-Item -ItemType Directory -Path $CheminDestination | Out-Null
-    Write-Host "  [OK] Dossier créé : $CheminDestination" -ForegroundColor Green
+    Write-Host "  [OK] Dossier cree : $CheminDestination" -ForegroundColor Green
 }
 
-# --- Ordre d'import des modules VBA ---
+# Ordre d'import obligatoire
 $Modules = @(
-    # CORE (en premier — les autres en dépendent)
     "core\modConfig.bas",
     "core\modDatabase.bas",
     "core\modSession.bas",
     "core\modSecurite.bas",
     "core\modJournal.bas",
     "core\modUtils.bas",
-
-    # METIER
     "metier\modClients.bas",
     "metier\modPrestataires.bas",
     "metier\modRessources.bas",
@@ -61,8 +54,6 @@ $Modules = @(
     "metier\modPaiements.bas",
     "metier\modBillets.bas",
     "metier\modRapports.bas",
-
-    # UI (thème et navigation avant les formulaires)
     "ui\modThemeAccess.bas",
     "ui\modNavigation.bas",
     "ui\modFormFactory.bas",
@@ -75,18 +66,14 @@ $Modules = @(
     "ui\modFormsPaiements.bas",
     "ui\modFormsAdministration.bas",
     "ui\modFormsRapports.bas",
-
-    # REPORTS
     "reports\modReportsFactory.bas",
     "reports\modEtatsImprimables.bas",
-
-    # INSTALL (en dernier — utilisent tout ce qui précède)
     "install\modCreationRequetes.bas",
     "install\modInstall_RESERV_PLUS.bas"
 )
 
-# --- Vérifier que tous les fichiers existent ---
-Write-Host "  Vérification des 30 modules VBA..." -ForegroundColor Yellow
+# Verification que tous les fichiers existent
+Write-Host "  Verification des 30 modules VBA..." -ForegroundColor Yellow
 $Manquants = @()
 foreach ($m in $Modules) {
     $chemin = Join-Path $DossierVBA $m
@@ -98,59 +85,59 @@ if ($Manquants.Count -gt 0) {
     Read-Host "  Appuyez sur ENTREE pour quitter"
     exit 1
 }
-Write-Host "  [OK] 30 fichiers trouvés" -ForegroundColor Green
+Write-Host "  [OK] 30 fichiers trouves" -ForegroundColor Green
 Write-Host ""
 
-# --- Vérification Trust Access au modèle objet VBA ---
-Write-Host "  PRÉREQUIS IMPORTANT" -ForegroundColor Yellow
-Write-Host "  ──────────────────────────────────────────────────────" -ForegroundColor Gray
-Write-Host "  Dans Access, activez : Fichier → Options → Centre de gestion"  -ForegroundColor White
-Write-Host "  de la confidentialité → Paramètres → Paramètres des macros" -ForegroundColor White
-Write-Host "  → cocher [v] Approuver l'accès au modèle objet du projet VBA" -ForegroundColor White
-Write-Host "  ──────────────────────────────────────────────────────" -ForegroundColor Gray
+# Prerequis VBA
+Write-Host "  PREREQUIS IMPORTANT" -ForegroundColor Yellow
+Write-Host "  ----------------------------------------------------------" -ForegroundColor Gray
+Write-Host "  Dans Access : Fichier > Options > Centre de gestion" -ForegroundColor White
+Write-Host "  de la confidentialite > Parametres des macros" -ForegroundColor White
+Write-Host "  > cocher [v] Approuver l'acces au modele objet du projet VBA" -ForegroundColor White
+Write-Host "  ----------------------------------------------------------" -ForegroundColor Gray
 Write-Host ""
 
-$Reponse = Read-Host "  Ce paramètre est-il activé ? (O pour continuer, N pour annuler)"
+$Reponse = Read-Host "  Ce parametre est-il active ? (O pour continuer, N pour annuler)"
 if ($Reponse.ToUpper() -ne "O") {
-    Write-Host "  Activez d'abord ce paramètre dans Access, puis relancez." -ForegroundColor Yellow
+    Write-Host "  Activez ce parametre dans Access, puis relancez." -ForegroundColor Yellow
     exit 0
 }
 
-# --- Supprimer base existante si demandé ---
+# Supprimer base existante
 if (Test-Path $CheminAccdb) {
     Write-Host ""
-    $Rep = Read-Host "  La base $NomBase existe déjà. L'écraser ? (O/N)"
+    $Rep = Read-Host "  La base $NomBase existe deja. L'ecraser ? (O/N)"
     if ($Rep.ToUpper() -eq "O") {
         Remove-Item $CheminAccdb -Force
-        Write-Host "  [OK] Ancienne base supprimée" -ForegroundColor Green
+        Write-Host "  [OK] Ancienne base supprimee" -ForegroundColor Green
     } else {
-        Write-Host "  Installation annulée." -ForegroundColor Yellow
+        Write-Host "  Installation annulee." -ForegroundColor Yellow
         exit 0
     }
 }
 
-# --- Lancer Access via COM ---
+# Lancer Access via COM
 Write-Host ""
-Write-Host "  Démarrage de Microsoft Access..." -ForegroundColor Cyan
+Write-Host "  Demarrage de Microsoft Access..." -ForegroundColor Cyan
 try {
     $Access = New-Object -ComObject Access.Application
 } catch {
-    Write-Host "  [ERREUR] Microsoft Access n'est pas installé ou est inaccessible." -ForegroundColor Red
+    Write-Host "  [ERREUR] Microsoft Access inaccessible." -ForegroundColor Red
     Write-Host "  $_" -ForegroundColor Red
     Read-Host "  Appuyez sur ENTREE pour quitter"
     exit 1
 }
 
-$Access.Visible = $true  # Rendre visible pour suivi visuel
+$Access.Visible = $true
 
-# --- Créer la base de données ---
-Write-Host "  Création de $NomBase..." -ForegroundColor Cyan
+# Creer la base de donnees
+Write-Host "  Creation de $NomBase..." -ForegroundColor Cyan
 $Access.NewCurrentDatabase($CheminAccdb)
 Start-Sleep -Seconds 2
 
-# --- Importer les modules VBA ---
+# Importer les modules VBA
 Write-Host ""
-Write-Host "  Import des modules VBA..." -ForegroundColor Cyan
+Write-Host "  Import des 30 modules VBA..." -ForegroundColor Cyan
 $i = 0
 foreach ($m in $Modules) {
     $i++
@@ -159,55 +146,49 @@ foreach ($m in $Modules) {
 
     try {
         $Access.VBE.ActiveVBProject.VBComponents.Import($CheminModule) | Out-Null
-        Write-Host ("  [{0:D2}/{1}] {2}" -f $i, $Modules.Count, $NomModule) -ForegroundColor Green
+        Write-Host ("  [{0:D2}/{1}] OK : {2}" -f $i, $Modules.Count, $NomModule) -ForegroundColor Green
     } catch {
-        Write-Host ("  [{0:D2}/{1}] ERREUR : {2}" -f $i, $Modules.Count, $NomModule) -ForegroundColor Red
-        Write-Host "    $_" -ForegroundColor DarkRed
+        Write-Host ("  [{0:D2}/{1}] ERREUR : {2} -> {3}" -f $i, $Modules.Count, $NomModule, $_.Exception.Message) -ForegroundColor Red
     }
 
-    # Petite pause toutes les 10 imports pour laisser Access respirer
     if ($i % 10 -eq 0) { Start-Sleep -Milliseconds 500 }
 }
 
 Write-Host ""
-Write-Host "  [$i modules importés]" -ForegroundColor Green
+Write-Host "  [$i modules importes]" -ForegroundColor Green
 
-# --- Sauvegarder avant de lancer l'installeur ---
+# Sauvegarder et rouvrir
 Write-Host ""
 Write-Host "  Sauvegarde..." -ForegroundColor Cyan
-$Access.CurrentDb().Close()
+try { $Access.CurrentDb().Close() } catch {}
 Start-Sleep -Seconds 1
 $Access.OpenCurrentDatabase($CheminAccdb)
 Start-Sleep -Seconds 2
 
-# --- Lancer l'installeur RESERV+ ---
+# Lancer l'installeur
 Write-Host "  Lancement de Installer_RESERV_PLUS..." -ForegroundColor Cyan
-Write-Host "  (création des 14 tables, 12 requêtes, 11 formulaires, données démo)" -ForegroundColor Gray
+Write-Host "  (14 tables, 12 requetes, 11 formulaires, donnees demo)" -ForegroundColor Gray
 
 try {
     $Access.Run("Installer_RESERV_PLUS")
     Write-Host ""
-    Write-Host "  [OK] Installation terminée avec succès !" -ForegroundColor Green
+    Write-Host "  [OK] Installation terminee avec succes !" -ForegroundColor Green
 } catch {
     Write-Host ""
-    Write-Host "  [ATTENTION] Erreur lors de l'installation automatique :" -ForegroundColor Yellow
-    Write-Host "  $_" -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host "  → Ouvrez la fenêtre Exécution VBA (CTRL+G) et tapez manuellement :" -ForegroundColor Cyan
-    Write-Host "     Installer_RESERV_PLUS" -ForegroundColor White
+    Write-Host "  [INFO] Lancez manuellement dans Access (CTRL+G) :" -ForegroundColor Yellow
+    Write-Host "         Installer_RESERV_PLUS" -ForegroundColor White
+    Write-Host "  Erreur : $($_.Exception.Message)" -ForegroundColor DarkYellow
 }
 
-# --- Résultat final ---
+# Resultat final
 Write-Host ""
-Write-Host "  ╔══════════════════════════════════════════════════════╗" -ForegroundColor Green
-Write-Host "  ║               INSTALLATION TERMINÉE                 ║" -ForegroundColor Green
-Write-Host "  ╠══════════════════════════════════════════════════════╣" -ForegroundColor Green
-Write-Host "  ║  Connexion admin  : admin     / admin123             ║" -ForegroundColor Green
-Write-Host "  ║  Connexion agent  : agent     / agent123             ║" -ForegroundColor Green
-Write-Host "  ║  Connexion user   : utilisateur / user123            ║" -ForegroundColor Green
-Write-Host "  ╠══════════════════════════════════════════════════════╣" -ForegroundColor Green
-Write-Host "  ║  Base créée dans  : $CheminDestination$('' * [Math]::Max(0, 22 - $CheminDestination.Length)) ║" -ForegroundColor Green
-Write-Host "  ╚══════════════════════════════════════════════════════╝" -ForegroundColor Green
+Write-Host "  ============================================================" -ForegroundColor Green
+Write-Host "  INSTALLATION TERMINEE" -ForegroundColor Green
+Write-Host "  Connexion admin      : admin       / admin123" -ForegroundColor Green
+Write-Host "  Connexion agent      : agent       / agent123" -ForegroundColor Green
+Write-Host "  Connexion utilisateur: utilisateur / user123" -ForegroundColor Green
+Write-Host "  Base creee dans      : $CheminDestination" -ForegroundColor Green
+Write-Host "  ============================================================" -ForegroundColor Green
 Write-Host ""
 
 Read-Host "  Appuyez sur ENTREE pour terminer"
