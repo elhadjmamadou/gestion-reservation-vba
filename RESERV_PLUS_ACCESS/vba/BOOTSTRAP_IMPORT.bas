@@ -10,6 +10,12 @@ Option Explicit
 ' 3. Entrer le chemin du dossier vba\ quand demande
 ' =============================================================================
 
+Public Sub ImporterTous(dossier As String)
+' Importe tous les modules sans lancer l'installation
+' Usage : ImporterTous "C:\...\vba"
+    ImporterModules dossier
+End Sub
+
 Public Sub LancerInstallationComplete()
     Dim chemin As String
     chemin = InputBox( _

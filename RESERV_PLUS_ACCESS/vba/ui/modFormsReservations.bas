@@ -19,7 +19,7 @@ Public Sub Creer_F_RESERVATIONS()
     Set frm = CreateForm()
 
     frm.Width = 16000
-    frm.InsideHeight = 9200
+    frm.Detail.Height = 9200
     frm.RecordSelectors = False
     frm.NavigationButtons = False
     frm.DividingLines = False
@@ -168,7 +168,7 @@ Public Sub Creer_F_NOUVELLE_RESERVATION()
     Set frm = CreateForm()
 
     frm.Width = 16000
-    frm.InsideHeight = 9400
+    frm.Detail.Height = 9400
     frm.RecordSelectors = False
     frm.NavigationButtons = False
     frm.DividingLines = False
@@ -405,11 +405,11 @@ Public Function NouvelleRes_VerifierDisponibilite() As Integer
     idResIgnore = CLng(Nz(frm!txtIdReservation.Value, 0))
 
     If EstRessourceDisponible(idRess, dateDebut, dateFin, idResIgnore) Then
-        frm!lblResultatDispo.Caption = Chr(10003) & "  Disponible — Aucun conflit sur cette période"
+        frm!lblResultatDispo.Caption = Chr(10003) & "  Disponible - Aucun conflit sur cette période"
         frm!lblResultatDispo.ForeColor = COULEUR_SUCCESS
         frm!lblResultatDispo.BackColor = CouleurAccess(39, 174, 96) - 10000000
     Else
-        frm!lblResultatDispo.Caption = Chr(10007) & "  Indisponible — Conflit détecté sur cette période"
+        frm!lblResultatDispo.Caption = Chr(10007) & "  Indisponible - Conflit détecté sur cette période"
         frm!lblResultatDispo.ForeColor = COULEUR_DANGER
     End If
 

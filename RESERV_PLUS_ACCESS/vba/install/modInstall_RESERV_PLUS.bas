@@ -76,7 +76,7 @@ Public Sub Installer_RESERV_PLUS()
            "╠══════════════════════════════════════╣" & vbCrLf & _
            "║  → Ouvrez le formulaire F_CONNEXION  ║" & vbCrLf & _
            "╚══════════════════════════════════════╝", _
-           vbInformation, "RESERV+ — Installation terminée"
+           vbInformation, "RESERV+ - Installation terminée"
 
     ' Ouvrir le formulaire de connexion
     If FormulaireExiste(FORM_CONNEXION) Then

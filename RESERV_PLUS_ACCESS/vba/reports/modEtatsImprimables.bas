@@ -62,10 +62,10 @@ Public Sub ImprimerRecuPaiement(idPaiement As Long)
     t = t & "Mode        : " & ChaineSure(rs!mode_paiement) & vbCrLf
     t = t & "Solde rest. : " & Format(SoldeReservation(CLng(rs!id_reservation)), "#,##0") & " " & devise & vbCrLf
     t = t & String(55, "═") & vbCrLf
-    t = t & "Merci de votre confiance — " & nomEtab
+    t = t & "Merci de votre confiance - " & nomEtab
 
     rs.Close
-    MsgBox t, vbInformation, "Reçu de paiement — " & APP_NOM
+    MsgBox t, vbInformation, "Reçu de paiement - " & APP_NOM
     JournaliserConsultation "Reçu paiement #" & idPaiement
 End Sub
 
@@ -79,8 +79,8 @@ Public Sub RapportJournalier()
     Dim dateStr As String
     dateStr = FormatDate(Now())
 
-    t = "═══ RAPPORT JOURNALIER — " & dateStr & " ═══" & vbCrLf & vbCrLf
-    t = t & APP_NOM & " — " & ObtenirParametre("NOM_ETABLISSEMENT", "RESERV+") & vbCrLf
+    t = "═══ RAPPORT JOURNALIER - " & dateStr & " ═══" & vbCrLf & vbCrLf
+    t = t & APP_NOM & " - " & ObtenirParametre("NOM_ETABLISSEMENT", "RESERV+") & vbCrLf
     t = t & String(45, "─") & vbCrLf & vbCrLf
 
     t = t & "RÉSERVATIONS" & vbCrLf
@@ -108,7 +108,7 @@ Public Sub RapportJournalier()
     t = t & "Généré par : " & g_NomComplet & " (" & g_Role & ")" & vbCrLf
     t = t & FormatDateHeure(Now())
 
-    MsgBox t, vbInformation, "Rapport journalier — " & APP_NOM
+    MsgBox t, vbInformation, "Rapport journalier - " & APP_NOM
     JournaliserConsultation "Rapport journalier du " & dateStr
 End Sub
 

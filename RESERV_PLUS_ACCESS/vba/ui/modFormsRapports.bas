@@ -16,7 +16,7 @@ Public Sub Creer_F_ETATS_RAPPORTS()
     Set frm = CreateForm()
 
     frm.Width = 16000
-    frm.InsideHeight = 9200
+    frm.Detail.Height = 9200
     frm.RecordSelectors = False
     frm.NavigationButtons = False
     frm.DividingLines = False
@@ -227,7 +227,7 @@ Public Function Rapports_TauxOccupation() As Integer
               "ORDER BY nb_sejours DESC"
     frm!lstResultats.RowSource = sqlTaux
     frm!lstResultats.Requery
-    frm!lblSynthese.Caption = "Taux d'occupation — Période : " & FormatDate(dateDebut) & " au " & FormatDate(dateFin)
+    frm!lblSynthese.Caption = "Taux d'occupation - Période : " & FormatDate(dateDebut) & " au " & FormatDate(dateFin)
     JournaliserConsultation "Taux occupation"
     Rapports_TauxOccupation = 0
 End Function
@@ -247,13 +247,13 @@ Public Function Rapports_Journal() As Integer
     frm!lstResultats.Requery
     Dim nb As Long
     nb = CompterEnregistrements("JOURNAL_ACTION", "")
-    frm!lblSynthese.Caption = "Journal des actions — " & nb & " entrée(s)"
+    frm!lblSynthese.Caption = "Journal des actions - " & nb & " entrée(s)"
     Rapports_Journal = 0
 End Function
 
 Public Function Rapports_Exporter() As Integer
     MsgBox "Pour exporter : Clic-droit sur la liste → Exporter → Excel." & vbCrLf & _
            "Ou utilisez Données Externes → Exporter dans le ruban Access.", _
-           vbInformation, APP_NOM & " — Export"
+           vbInformation, APP_NOM & " - Export"
     Rapports_Exporter = 0
 End Function

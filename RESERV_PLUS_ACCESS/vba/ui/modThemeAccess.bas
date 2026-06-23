@@ -86,7 +86,7 @@ End Function
 ' ============================================================
 Public Sub StylerFormulaire(frm As Form, titre As String)
     With frm
-        .Caption = titre & " — " & APP_NOM
+        .Caption = titre & " - " & APP_NOM
         .RecordSelectors = False
         .NavigationButtons = False
         .DividingLines = False

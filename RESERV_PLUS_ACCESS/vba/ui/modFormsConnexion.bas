@@ -20,11 +20,11 @@ Public Sub Creer_F_CONNEXION()
 
     ' Créer le formulaire
     Set frm = CreateForm()
-    frm.Caption = "Connexion — " & APP_NOM
+    frm.Caption = "Connexion - " & APP_NOM
 
     ' Dimensions : 14000 x 9000 twips
     frm.Width = 14000
-    frm.InsideHeight = 9000
+    frm.Detail.Height = 9000
     frm.RecordSelectors = False
     frm.NavigationButtons = False
     frm.DividingLines = False

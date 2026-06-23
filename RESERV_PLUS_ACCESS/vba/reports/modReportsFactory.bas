@@ -22,7 +22,7 @@ Public Sub Creer_RPT_RESERVATIONS()
     Set rpt = CreateReport()
 
     rpt.RecordSource = RQ_RESERVATIONS_COMPLETES
-    rpt.Caption = "Liste des réservations — " & APP_NOM
+    rpt.Caption = "Liste des réservations - " & APP_NOM
 
     ' En-tête rapport
     rpt.PageHeader.BackColor = COULEUR_PRIMAIRE
@@ -31,7 +31,7 @@ Public Sub Creer_RPT_RESERVATIONS()
     ' Titre
     Dim lblTitre As Access.Label
     Set lblTitre = CreateReportControl(nomRpt, acLabel, acPageHeader, , , 200, 100, 8000, 600)
-    lblTitre.Caption = APP_NOM & " — Liste des réservations"
+    lblTitre.Caption = APP_NOM & " - Liste des réservations"
     lblTitre.FontName = POLICE
     lblTitre.FontSize = 14
     lblTitre.FontBold = True
@@ -99,7 +99,7 @@ Public Sub Creer_RPT_RESERVATIONS()
     rpt.PageFooter.Height = 480
     Dim lblPage As Access.Label
     Set lblPage = CreateReportControl(nomRpt, acLabel, acPageFooter, , , 200, 60, 6000, 320)
-    lblPage.Caption = APP_NOM & " — Confidentiel"
+    lblPage.Caption = APP_NOM & " - Confidentiel"
     lblPage.FontName = POLICE
     lblPage.FontSize = 8
     lblPage.ForeColor = COULEUR_TEXTE_SECONDAIRE

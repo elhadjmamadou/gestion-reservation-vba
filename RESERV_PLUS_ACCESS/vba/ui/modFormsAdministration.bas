@@ -19,7 +19,7 @@ Public Sub Creer_F_UTILISATEURS()
     Set frm = CreateForm()
 
     frm.Width = 14000
-    frm.InsideHeight = 8000
+    frm.Detail.Height = 8000
     frm.RecordSelectors = False
     frm.NavigationButtons = False
     frm.DividingLines = False
@@ -121,7 +121,7 @@ Public Sub Creer_F_PARAMETRES()
     Set frm = CreateForm()
 
     frm.Width = 12000
-    frm.InsideHeight = 7000
+    frm.Detail.Height = 7000
     frm.RecordSelectors = False
     frm.NavigationButtons = False
     frm.DividingLines = False

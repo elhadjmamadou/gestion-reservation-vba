@@ -16,7 +16,7 @@ Public Sub Creer_F_PRESTATAIRES()
     Set frm = CreateForm()
 
     frm.Width = 16000
-    frm.InsideHeight = 9200
+    frm.Detail.Height = 9200
     frm.RecordSelectors = False
     frm.NavigationButtons = False
     frm.DividingLines = False

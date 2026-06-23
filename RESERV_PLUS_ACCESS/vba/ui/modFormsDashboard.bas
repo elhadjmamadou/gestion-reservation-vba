@@ -15,9 +15,9 @@ Public Sub Creer_F_TABLEAU_BORD()
     SupprimerObjetAccess acForm, nomFrm
 
     Set frm = CreateForm()
-    frm.Caption = "Tableau de bord — " & APP_NOM
+    frm.Caption = "Tableau de bord - " & APP_NOM
     frm.Width = 16000
-    frm.InsideHeight = 9200
+    frm.Detail.Height = 9200
     frm.RecordSelectors = False
     frm.NavigationButtons = False
     frm.DividingLines = False
